@@ -1,0 +1,6 @@
+saved_models*
+condor*
+docker_stderror
+tb_logs/*
+*__pycache__*
+output/*
