@@ -1,5 +1,5 @@
 saved_models*
-condor*
+condor/*
 docker_stderror
 tb_logs/*
 *__pycache__*

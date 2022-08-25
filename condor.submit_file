@@ -1,0 +1,56 @@
+##################
+#
+# Example Job for HTCondor
+#
+####################
+
+#---------------------------------------------
+# Name your batch so it's easy to distinguish in the q.
+JobBatchName = "SketchOD"
+
+# --------------------------------------
+# Executable and its arguments
+executable    = run.sh
+
+# -----------------------------------
+# Universe (vanilla, docker)
+universe         = docker
+docker_image     = registry.eps.surrey.ac.uk/pinakinathc:latest
+
+# -------------------------------------
+# Event, out and error logs
+log    = condor/c$(cluster).p$(process).log
+output = condor/c$(cluster).p$(process).out
+error  = condor/c$(cluster).p$(process).error
+
+# -----------------------------------
+# File Transfer, Input, Output
+should_transfer_files = YES
+
+environment = "mount=/vol/research/sketchcaption/,/vol/research/NOBACKUP/CVSSP/,/vol/vssp/datasets/still/adobe-wang/,/vol/vssp/datasets/still/siga-15-garment/,/vol/research/sketchscene/,/vol/research/datasets/still/fscoco,/vol/research/datasets/still/MSCOCO"
+
+# ------------------------------------
+requirements  = ( HasStornext == true ) && ( CUDACapability >= 6.2 )
+
+# -------------------------------------
+# Resources
+request_GPUs     = 1
++GPUMem          = 10000
+request_CPUs     = 12
+request_memory = 32G
+
+#This job will complete in less than 1 hours
+#NB interactive jobs are limited to 4 hours
++JobRunTime = 36
+
+#This job can checkpoint
++CanCheckpoint = true
+
+# -----------------------------------
+# Queue commands
+
+arguments = python -m experiments.retrieval --exp_name=retrieval_condor --batch_size=128
+queue 1
+
+arguments = python -m experiments.retrieval --exp_name=instance_retrieval_condor --batch_size=128 --instance_level
+queue 1
